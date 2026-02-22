@@ -4377,24 +4377,165 @@ async function openEconomyModal() {
 }
 
 function openBillingModal() {
-  openModal(`
-    <div class="modal-header">
-      <div>
-        <h2>Fakturace</h2>
-        <div class="meta">Modul pro vystavení faktur a evidenci plateb.</div>
-      </div>
-      <button class="ghost" id="closeModal">Zavřít</button>
-    </div>
-    <div class="modal-grid">
-      <div class="settings-section">
-        <h3>Funkce PRO verze</h3>
-        <div class="settings-list">
-          <div class="settings-item"><span>Vystavování faktur klientům z konkrétní návštěvy, odeslání na e-mail</span><span>Aktivní v PRO</span></div>
-          <div class="settings-item"><span>Vystavení faktur pracovníkům salonu</span><span>Aktivní v PRO</span></div>
+  openModal(
+    `
+      <div class="modal-header">
+        <div>
+          <h2>Fakturace</h2>
+          <div class="meta">Krok 0: vizuální návrh celé fakturační stránky (bez finální logiky).</div>
         </div>
+        <button class="ghost" id="closeModal">Zavřít</button>
       </div>
-    </div>
-  `);
+
+      <div class="billing-shell">
+        <section class="settings-section billing-hero">
+          <div>
+            <h3>Fakturační centrum</h3>
+            <div class="meta">Přehled faktur, stavů plateb a připravený prostor pro vystavování a editace.</div>
+          </div>
+          <div class="billing-hero-actions">
+            <button class="primary" type="button" disabled>+ Nová faktura</button>
+            <button class="ghost" type="button" disabled>Export PDF</button>
+          </div>
+        </section>
+
+        <section class="billing-kpis">
+          <article class="billing-kpi">
+            <div class="billing-kpi-label">Vystaveno tento měsíc</div>
+            <div class="billing-kpi-value">128 900 Kč</div>
+          </article>
+          <article class="billing-kpi">
+            <div class="billing-kpi-label">Uhrazené</div>
+            <div class="billing-kpi-value">97 400 Kč</div>
+          </article>
+          <article class="billing-kpi">
+            <div class="billing-kpi-label">Po splatnosti</div>
+            <div class="billing-kpi-value">18 500 Kč</div>
+          </article>
+          <article class="billing-kpi">
+            <div class="billing-kpi-label">Storno</div>
+            <div class="billing-kpi-value">13 000 Kč</div>
+          </article>
+        </section>
+
+        <section class="settings-section">
+          <h3>Filtry</h3>
+          <div class="billing-filter-grid">
+            <div class="field">
+              <label>Hledat</label>
+              <input type="text" placeholder="Číslo faktury, klient, poznámka…" />
+            </div>
+            <div class="field">
+              <label>Stav</label>
+              <select>
+                <option>Vše</option>
+                <option>Uhrazeno</option>
+                <option>Po splatnosti</option>
+                <option>Vystaveno</option>
+                <option>Storno</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Od</label>
+              <input type="date" />
+            </div>
+            <div class="field">
+              <label>Do</label>
+              <input type="date" />
+            </div>
+          </div>
+        </section>
+
+        <section class="billing-layout">
+          <div class="settings-section">
+            <div class="panel-header">
+              <h3>Seznam faktur</h3>
+              <div class="meta">Náhled rozložení tabulky</div>
+            </div>
+            <div class="billing-table-wrap">
+              <div class="billing-table billing-table-head">
+                <span>Číslo</span>
+                <span>Klient</span>
+                <span>Vystaveno</span>
+                <span>Splatnost</span>
+                <span>Částka</span>
+                <span>Stav</span>
+                <span>Akce</span>
+              </div>
+              <div class="billing-table billing-table-row">
+                <span>2026-001</span>
+                <span>Jana Nováková</span>
+                <span>20. 2. 2026</span>
+                <span>27. 2. 2026</span>
+                <span>4 280 Kč</span>
+                <span><em class="billing-status is-paid">Uhrazeno</em></span>
+                <span><button class="ghost tiny" type="button" disabled>Detail</button></span>
+              </div>
+              <div class="billing-table billing-table-row">
+                <span>2026-002</span>
+                <span>Zuzana Malá</span>
+                <span>20. 2. 2026</span>
+                <span>25. 2. 2026</span>
+                <span>2 390 Kč</span>
+                <span><em class="billing-status is-overdue">Po splatnosti</em></span>
+                <span><button class="ghost tiny" type="button" disabled>Detail</button></span>
+              </div>
+              <div class="billing-table billing-table-row">
+                <span>2026-003</span>
+                <span>Salon interní vyúčtování</span>
+                <span>19. 2. 2026</span>
+                <span>26. 2. 2026</span>
+                <span>9 900 Kč</span>
+                <span><em class="billing-status is-issued">Vystaveno</em></span>
+                <span><button class="ghost tiny" type="button" disabled>Detail</button></span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="settings-section billing-detail-preview">
+            <h3>Náhled detailu faktury</h3>
+            <div class="meta">Pravý panel bude v dalších krocích plně editovatelný.</div>
+            <div class="billing-preview-card">
+              <div class="billing-preview-row">
+                <span>Číslo faktury</span>
+                <strong>2026-003</strong>
+              </div>
+              <div class="billing-preview-row">
+                <span>Klient</span>
+                <strong>Salon interní vyúčtování</strong>
+              </div>
+              <div class="billing-preview-row">
+                <span>Datum vystavení</span>
+                <strong>19. 2. 2026</strong>
+              </div>
+              <div class="billing-preview-row">
+                <span>Datum splatnosti</span>
+                <strong>26. 2. 2026</strong>
+              </div>
+              <div class="billing-preview-row">
+                <span>Celkem</span>
+                <strong>9 900 Kč</strong>
+              </div>
+              <div class="billing-preview-actions">
+                <button class="ghost" type="button" disabled>Upravit</button>
+                <button class="ghost" type="button" disabled>Storno</button>
+                <button class="primary" type="button" disabled>Odeslat e-mailem</button>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="settings-section">
+          <h3>Funkce PRO verze</h3>
+          <div class="settings-list">
+            <div class="settings-item"><span>Vystavování faktur klientům z konkrétní návštěvy, odeslání na e-mail</span><span>Aktivní v PRO</span></div>
+            <div class="settings-item"><span>Vystavení faktur pracovníkům salonu</span><span>Aktivní v PRO</span></div>
+          </div>
+        </section>
+      </div>
+    `,
+    'modal-settings modal-billing'
+  );
 
   document.getElementById('closeModal').addEventListener('click', closeModal);
 }
